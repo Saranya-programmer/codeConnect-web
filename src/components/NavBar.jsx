@@ -1,12 +1,34 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+import { removeUser } from "../utils/userSlice";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const NavBar = () => {
     // const store=useSelector((store)=>store.user);
     // console.log(store);
 
     const store = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                BASE_URL + "/logout",
+                {},
+                { withCredentials: true }
+            );
+
+            dispatch(removeUser());
+            navigate("/login");
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         console.log(store);
     }, [store]);
@@ -16,7 +38,7 @@ const NavBar = () => {
         <>
             <div className="navbar bg-base-300 shadow-sm">
                 <div className="flex-1">
-                <Link to="/" className="btn btn-ghost text-xl">CodeConnect</Link>
+                    <Link to="/" className="btn btn-ghost text-xl">CodeConnect</Link>
                 </div>
                 {store && (<div className="flex gap-2">
                     <div className="form-control">Welcome,{store.firstName}</div>
@@ -40,7 +62,7 @@ const NavBar = () => {
                                 </Link>
                             </li>
                             <li><a>Settings</a></li>
-                            <li><a>Logout</a></li>
+                            <li><a onClick={handleLogout}>Logout</a></li>
                         </ul>
                     </div>
 
